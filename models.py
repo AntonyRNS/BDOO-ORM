@@ -1,55 +1,55 @@
-from sqlalchemy import Column, Integer, String, Boolean
-from sqlalchemy.orm import declarative_base, Session
+from sqlalchemy import (
+    Column, Integer, String, ForeignKey, Float,
+    DateTime, Boolean, func, UniqueConstraint
+)
+from sqlalchemy.orm import relationship, declarative_base
+from datetime import datetime
 
 Base = declarative_base()
 
-class Tarefa(Base):
-    __tablename__ = "tarefas"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    descricao = Column(String(200), nullable=False)
-    concluida = Column(Boolean, default=False)
 
-    def concluir(self):
-        self.concluida = True
+class Usuario(Base):
+    __tablename__ = 'usuarios'
+    id = Column(Integer, primary_key=True)
+    nome = Column(String(100), nullable=False)
+    email = Column(String(100), unique=True, nullable=False)
+    idade = Column(Integer)
+    ativo = Column(Boolean, default=True)
+    pedidos = relationship('Pedido', back_populates='usuario')
 
-    def reabrir(self):
-        self.concluida = False
 
-    def __repr__(self):
-        status = "Concluída" if self.concluida else "Não concluída"
-        return f"{self.descricao} - {status}"
+class Produto(Base):
+    __tablename__ = 'produtos'
+    id = Column(Integer, primary_key=True)
+    nome = Column(String(100), nullable=False)
+    preco = Column(Float, nullable=False)
+    categoria = Column(String(50))
+    estoque = Column(Integer, default=0)
+    criado_em = Column(DateTime, default=datetime.now)
 
-class ListaDeTarefas:
-    def __init__(self, session: Session):
-        """Recebe uma sessão SQLAlchemy para gerenciar as tarefas."""
-        self.session = session
 
-    def adicionar_tarefa(self, descricao):
-        nova_tarefa = Tarefa(descricao=descricao)
-        self.session.add(nova_tarefa)
-        self.session.commit()
+class Pedido(Base):
+    __tablename__ = 'pedidos'
+    id = Column(Integer, primary_key=True)
+    usuario_id = Column(Integer, ForeignKey('usuarios.id'), nullable=False)
+    produto_id = Column(Integer, ForeignKey('produtos.id'), nullable=False)
+    quantidade = Column(Integer, nullable=False)
+    status = Column(String(20), default='pendente')
+    data_pedido = Column(DateTime, default=datetime.now)
 
-    def remover_tarefa(self, indice):
-        tarefa = self._get_tarefa_por_indice(indice)
-        if tarefa:
-            self.session.delete(tarefa)
-            self.session.commit()
+    usuario = relationship('Usuario', back_populates='pedidos')
+    produto = relationship('Produto')
 
-    def concluir_tarefa(self, indice):
-        tarefa = self._get_tarefa_por_indice(indice)
-        if tarefa:
-            tarefa.concluir()
-            self.session.commit()
+    __table_args__ = (
+        UniqueConstraint('usuario_id', 'produto_id',
+                         name='uq_usuario_produto'),
+    )
 
-    def reabrir_tarefa(self, indice):
-        tarefa = self._get_tarefa_por_indice(indice)
-        if tarefa:
-            tarefa.reabrir()
-            self.session.commit()
 
-    def listar_tarefas(self):
-        return self.session.query(Tarefa).order_by(Tarefa.id).all()
-
-    def _get_tarefa_por_indice(self, indice):
-        tarefas = self.listar_tarefas()
-        return tarefas[indice] if indice < len(tarefas) else None
+class Avaliacao(Base):
+    __tablename__ = 'avaliacoes'
+    id = Column(Integer, primary_key=True)
+    usuario_id = Column(Integer, ForeignKey('usuarios.id'), nullable=False)
+    nota = Column(Integer, nullable=False)
+    comentario = Column(String(300))
+    usuario = relationship('Usuario')
