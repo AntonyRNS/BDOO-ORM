@@ -20,15 +20,12 @@ usuarios18 = []
 
 pedidos = session.query(Pedido).all()
 
-
+# 2
 for usuario in usuarios:
     if usuario.idade >= 18:
         usuarios18.append(usuario)
 
-
-# for i in usuarios18:
-#     print(i.nome)
-
+# 3
 pedidosMaiores = []
 data_selecionada = '01/03/2025'
 for pedido in pedidos:
@@ -36,6 +33,38 @@ for pedido in pedidos:
         pedidosMaiores.append(pedido)
 
 
-for i in pedidosMaiores:
-    print(i.status)
+# 4
+primeiro_usuario = session.query(Usuario).first()
 
+# 5
+eletronicos_por_preco = session.query(Produto).filter(Produto.categoria == 'eletrônicos').order_by(Produto.preco)
+eletronico_barato = eletronicos_por_preco.first()
+
+# 6
+def UltimoPedido(id):
+    ultimo_pedido = session.query(Pedido).filter(Pedido.usuario_id == id).order_by(Pedido.data_pedido.desc()).first()
+    return ultimo_pedido
+
+# 7
+usuario7 = session.get(Usuario, 7)
+
+# 8
+def verificar_produto(id):
+    produto = session.get(Produto, id)
+    if produto.estoque > 0:
+        return True
+    else:
+        return False
+    
+# 9
+def pedido_e_usuario(id):
+    pedido = session.get(Pedido, id)
+    usuario = session.get(Usuario, pedido.usuario_id)
+
+    return pedido, usuario
+
+# 10
+
+usuarios_entre_idade = session.query(Usuario).filter((Usuario.idade >= 25) & (Usuario.idade <= 35))
+
+print(usuarios_entre_idade)
