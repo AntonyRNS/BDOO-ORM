@@ -65,6 +65,6 @@ def pedido_e_usuario(id):
 
 # 10
 
-usuarios_entre_idade = session.query(Usuario).filter((Usuario.idade >= 25) & (Usuario.idade <= 35))
+usuarios_entre_idade = session.query(Usuario).filter((Usuario.idade >= 25) & (Usuario.idade <= 35)).all()
 
 print(usuarios_entre_idade)
