@@ -67,4 +67,11 @@ def pedido_e_usuario(id):
 
 usuarios_entre_idade = session.query(Usuario).filter((Usuario.idade >= 25) & (Usuario.idade <= 35)).all()
 
-print(usuarios_entre_idade)
+
+# 11
+
+pedidos_depois_2024 = session.query(Pedido).filter(((Pedido.status == 'cancelado') or (Pedido.status == 'pendente')) & Pedido.data_pedido > datetime.strptime('01/01/2025', '%d/%m/%Y')).all()
+
+# 12
+
+pedidos_acima_500 = session.query(Produto).filter(Produto.preco > 500).all()
