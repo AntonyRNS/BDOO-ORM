@@ -73,5 +73,9 @@ usuarios_entre_idade = session.query(Usuario).filter((Usuario.idade >= 25) & (Us
 pedidos_depois_2024 = session.query(Pedido).filter(((Pedido.status == 'cancelado') or (Pedido.status == 'pendente')) & Pedido.data_pedido > datetime.strptime('01/01/2025', '%d/%m/%Y')).all()
 
 # 12
+# Falta arrumar
+pedidos_acima_500 = session.query(Produto, Pedido).join(Produto, Pedido.produto_id == Produto.id).filter((Produto.preco > 500)).all()
 
-pedidos_acima_500 = session.query(Produto).filter(Produto.preco > 500).all()
+# 13
+inativos = session.query(Usuario).filter_by(ativo = False).all()
+print(inativos)
