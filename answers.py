@@ -116,24 +116,23 @@ def q24():
     return session.query(Pedido).order_by(Pedido.data_pedido.desc()).offset(8).all()
 
 # 25. Conte quantos usuários estão cadastrados no sistema.
-# (pendente de implementação)
 def q25():
-    pass
+    return session.query(Usuario).count()
 
 # 26. Determine o número de pedidos realizados com status "entregue".
-# (pendente de implementação)
+
 def q26():
-    pass
+    return session.query(Pedido).filter(Pedido.status == 'entregue').count()
 
 # 27. Conte quantos produtos existem na categoria "eletrônicos" com estoque maior que 0 e preço acima de R$ 100,00.
-# (pendente de implementação)
+
 def q27():
-    pass
+    return session.query(Produto).filter((Produto.categoria == 'eletrônicos') & (Produto.estoque > 0) & (Produto.preco > 100)).all()
 
 # 28. Liste todas as categorias únicas de produtos disponíveis no sistema.
-# (pendente de implementação)
 def q28():
-    pass
+
+    return session.query(Produto.categoria).distinct().all()
 
 # 29. Identifique as idades únicas dos usuários cadastrados no banco de dados.
 # (pendente de implementação)
@@ -219,4 +218,6 @@ def q44():
 # (pendente de implementação)
 def q45():
     pass
+
+print(q28())
 
