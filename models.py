@@ -4,6 +4,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship, declarative_base
 from datetime import datetime
+from sqlalchemy.ext.hybrid import hybrid_property
 
 Base = declarative_base()
 
@@ -26,6 +27,10 @@ class Produto(Base):
     categoria = Column(String(50))
     estoque = Column(Integer, default=0)
     criado_em = Column(DateTime, default=datetime.now)
+    @hybrid_property
+    def valor_estoque(self):
+        return self.estoque * self.preco;
+    
 
 
 class Pedido(Base):
