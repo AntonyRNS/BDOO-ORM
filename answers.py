@@ -2,6 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 from models import Base, Usuario, Produto, Pedido, Avaliacao
+from sqlalchemy.sql import exists
+from sqlalchemy import func
 
 engine = create_engine('sqlite:///exercicios.db')
 Base.metadata.create_all(engine)
@@ -131,93 +133,74 @@ def q27():
 
 # 28. Liste todas as categorias únicas de produtos disponíveis no sistema.
 def q28():
-
     return session.query(Produto.categoria).distinct().all()
 
 # 29. Identifique as idades únicas dos usuários cadastrados no banco de dados.
-# (pendente de implementação)
 def q29():
-    pass
+    return session.query(Usuario.idade).distinct().all()
 
 # 30. Obtenha todos os status únicos dos pedidos realizados por usuários ativos com mais de 25 anos de idade.
-# (pendente de implementação)
 def q30():
-    pass
+    return session.query(Pedido, Usuario).join(Pedido, Usuario.id == Pedido.usuario_id).filter(Usuario.idade > 25).distinct().all()
 
 # 31. Liste o nome dos usuários e os IDs dos pedidos que eles realizaram.
-# (pendente de implementação)
 def q31():
-    pass
+    return session.query(Usuario.nome, Pedido.id).join(Usuario, Pedido.usuario_id == Usuario.id).filter(Pedido.usuario_id == Usuario.id)
 
 # 32. Obtenha o nome dos produtos e a quantidade comprada em cada pedido realizado por um usuário específico chamado "João".
-# (pendente de implementação)
 def q32():
-    pass
+    return session.query(Produto.nome, Pedido.quantidade).join(Pedido, Produto.id == Pedido.usuario_id).filter(Usuario.nome == 'João').all()
 
 # 33. Liste todos os usuários que fizeram pedidos de produtos da categoria "livros", incluindo o nome do produto e a quantidade comprada em cada pedido.
-# (pendente de implementação)
 def q33():
-    pass
-
+    return session.query(Usuario.nome, Produto.nome, Pedido.quantidade).join(Pedido, Pedido.usuario_id == Usuario.id).join(Produto, Produto.id == Pedido.produto_id).filter(Produto.categoria == 'livros').all()
 # 34. Verifique se existe algum usuário chamado "Maria" cadastrado no sistema.
-# (pendente de implementação)
 def q34():
-    pass
+    return session.query(exists().where(Usuario.nome == 'Maria'))
 
 # 35. Confirme se há algum pedido realizado para um produto com estoque igual a 0.
-# (pendente de implementação)
 def q35():
-    pass
+    return session.query(Pedido).join(Produto, Produto.id == Pedido.produto_id).filter(Produto.estoque == 0).all()
 
 # 36. Determine se existe algum pedido feito por um usuário inativo com status "pendente".
-# (pendente de implementação)
 def q36():
-    pass
+    session.query(Pedido).join(Usuario, Usuario.id == Pedido.usuario_id).filter(Usuario.ativo == False, Pedido.status == 'pendente').first() is not None
 
 # 37. Retorne o nome e a idade de todos os usuários cadastrados no sistema.
-# (pendente de implementação)
 def q37():
-    pass
+    return session.query(Usuario.nome, Usuario.idade).all()
 
 # 38. Liste o nome dos produtos e seus preços para todos os itens cadastrados no banco de dados.
-# (pendente de implementação)
 def q38():
-    pass
+    return session.query(Produto.nome, Produto.preco).all()
 
 # 39. Obtenha o nome dos usuários, o ID dos pedidos e a quantidade comprada em cada pedido realizado por eles.
-# (pendente de implementação)
 def q39():
-    pass
+    return session.query(Usuario.nome, Pedido.id, Pedido.quantidade).join(Pedido, Usuario.id == Pedido.usuario_id).all()
 
 # 40. Agrupe os pedidos pelo status e conte quantos pedidos existem para cada status diferente no banco de dados.
-# (pendente de implementação)
 def q40():
-    pass
+    return session.query(Pedido.status, func.count(Pedido.id)).group_by(Pedido.status).count().all()
 
 # 41. Agrupe os produtos pela categoria e calcule o preço médio dos produtos em cada categoria disponível no sistema.
-# (pendente de implementação)
 def q41():
-    pass
+    return session.query(Produto.categoria, func.avg(Produto.preco)).group_by(Produto.categoria).all()
 
 # 42. Agrupe os pedidos por usuário e calcule a soma total das quantidades compradas por cada usuário ativo com mais de 30 anos de idade.
-# (pendente de implementação)
 def q42():
-    pass
+    return session.query(Usuario.nome, func.sum(Pedido.quantidade)).join(Pedido, Usuario.id == Pedido.usuario_id).filter(Usuario.ativo == True, Usuario.idade > 30).group_by(Usuario.id).all()
 
 # 43. Agrupe os pedidos pelo status e filtre apenas aqueles com mais de 3 registros em um único status usando having().
-# (pendente de implementação)
 def q43():
-    pass
+    return session.query(Pedido.status, func.count(Pedido.id).label('total')).group_by(Pedido.status).having(func.count(Pedido.id) > 3).all()
 
 # 44. Agrupe os produtos pela categoria e filtre as categorias cujo preço médio seja maior que R$ 200,00 utilizando having().
-# (pendente de implementação)
 def q44():
-    pass
+    return session.query(Produto.categoria, func.avg(Produto.preco).label('media')).group_by(Produto.categoria).having(func.avg(Produto.preco) > 200).all()
 
 # 45. Agrupe os pedidos por usuário, calcule a soma total das quantidades compradas e filtre apenas aqueles usuários cuja soma total seja maior que 10 usando having().
-# (pendente de implementação)
 def q45():
-    pass
+    return session.query(Usuario.nome, func.sum(Pedido.quantidade).label('total')).join(Pedido, Usuario.id == Pedido.usuario_id).group_by(Usuario.id).having(func.sum(Pedido.quantidade) > 10).all()
 
-print(q28())
+
 
