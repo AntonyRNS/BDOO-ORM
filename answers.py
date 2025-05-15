@@ -7,7 +7,7 @@ from models import (
 )
 
 
-engine = create_engine('sqlite:///exercicios.db')
+engine = create_engine('sqlite:///exercicios.db', echo=True)
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -291,8 +291,7 @@ def q45():
     return session.query(Usuario.nome, func.sum(Pedido.quantidade).label('total')).join(Pedido, Usuario.id == Pedido.usuario_id).group_by(Usuario.id).having(func.sum(Pedido.quantidade) > 10).all()
 
 
-def t01():
-    for p in session.query(Produto).filter(Produto.valor_estoque > 1000).all():
-        print(p.nome, p.valor_estoque)
+valores = session.query(Pedido).filter(Pedido.valor_total > 1000).all()
 
-print(session.query(Autor).all())
+for valor in valores:
+    print(valor.valor_total)

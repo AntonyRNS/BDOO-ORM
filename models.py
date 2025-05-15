@@ -1,6 +1,6 @@
 from sqlalchemy import (
     Column, Integer, String, ForeignKey, Float,
-    DateTime, Boolean, func, UniqueConstraint, Table
+    DateTime, Boolean, func, UniqueConstraint, Table, select
 )
 from sqlalchemy.orm import relationship, declarative_base
 from datetime import datetime, timedelta
@@ -22,7 +22,6 @@ class Usuario(Base):
     email = Column(String(100), unique=True, nullable=False)
     idade = Column(Integer)
     ativo = Column(Boolean, default=True)
-
     pedidos = relationship('Pedido', back_populates='usuario')
     grupos = relationship("Grupo", secondary=usuario_grupo, back_populates="usuarios")
 
@@ -47,6 +46,15 @@ class Pedido(Base):
     quantidade = Column(Integer, nullable=False)
     status = Column(String(20), default='pendente')
     data_pedido = Column(DateTime, default=datetime.now)
+
+    @hybrid_property
+    def valor_total(self):
+        return self.produto.preco * self.quantidade
+
+    @valor_total.expression
+    def valor_total(cls):
+       return select(Produto.preco * cls.quantidade).where(Produto.id == cls.produto_id).scalar_subquery()
+        
 
     usuario = relationship('Usuario', back_populates='pedidos')
     produto = relationship('Produto')
