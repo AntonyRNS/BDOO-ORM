@@ -1,9 +1,11 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
-from models import Base, Usuario, Produto, Pedido, Avaliacao
-from sqlalchemy.sql import exists
-from sqlalchemy import func
+from models import (
+    Base, Usuario, Produto, Pedido, Avaliacao,
+    Autor, Livro, Grupo, Medico, Paciente, Consulta
+)
+
 
 engine = create_engine('sqlite:///exercicios.db')
 Base.metadata.create_all(engine)
@@ -293,3 +295,4 @@ def t01():
     for p in session.query(Produto).filter(Produto.valor_estoque > 1000).all():
         print(p.nome, p.valor_estoque)
 
+print(session.query(Autor).all())
